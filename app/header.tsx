@@ -68,7 +68,7 @@ export default function Header() {
     >
       <Link href="/">
         <IconButton
-          w={16}
+          w={[12, null, 16]}
           h={12}
           aria-label="home"
           variant="ghost"
@@ -83,7 +83,7 @@ export default function Header() {
         )}
         <Input
           variant="filled"
-          placeholder="Search (Not available yet)"
+          placeholder="Search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
@@ -111,9 +111,10 @@ export default function Header() {
       <Menu>
         <MenuButton
           as={Button}
+          minW={12}
           w={12}
           h={12}
-          mr={4}
+          mr={[0, null, 4]}
           p={0}
           variant="ghost"
           rounded="full"

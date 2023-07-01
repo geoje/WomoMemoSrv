@@ -49,7 +49,7 @@ export default function Page() {
             variant="filled"
             boxShadow={"md"}
             cursor={"pointer"}
-            w={{ base: "100%", sm: "47%", md: "60" }}
+            w={["100%", "47%", "60", null, "72"]}
             bg={
               color == "white"
                 ? colorMode === "dark"
