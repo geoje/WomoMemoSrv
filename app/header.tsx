@@ -20,16 +20,12 @@ import {
   MenuList,
   useBreakpointValue,
   useColorMode,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
 
 export default function Header() {
-  const { toggleColorMode } = useColorMode();
-  const isOverMd = useBreakpointValue(
-    { base: false, md: true },
-    { ssr: false }
-  );
+  const { colorMode, toggleColorMode } = useColorMode();
+  const isOverMd = useBreakpointValue({ base: false, md: true });
   const [search, setSearch] = useState("");
 
   return (
@@ -39,7 +35,7 @@ export default function Header() {
       gap={2}
       alignItems="center"
       justifyContent="space-between"
-      background={useColorModeValue("white", "gray.800")}
+      background={colorMode === "dark" ? "gray.800" : "white"}
       sx={{
         boxShadow: "0 1px 3px 0 rgb(0 0 0/0.1), 0 1px 2px -1px rgb(0 0 0/0.1)",
       }}
@@ -76,11 +72,14 @@ export default function Header() {
         aria-label="mode"
         variant="ghost"
         onClick={toggleColorMode}
-        colorScheme={useColorModeValue("gray", "yellow")}
-        icon={useColorModeValue(
-          <MoonIcon color="gray.500" />,
-          <SunIcon color="yellow.500" />
-        )}
+        colorScheme={colorMode === "dark" ? "yellow" : "gray"}
+        icon={
+          colorMode === "dark" ? (
+            <SunIcon color="yellow.500" />
+          ) : (
+            <MoonIcon color="gray.500" />
+          )
+        }
       />
 
       <Menu>
