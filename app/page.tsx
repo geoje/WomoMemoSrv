@@ -1,6 +1,6 @@
 "use client";
 
-import { AutoResizeTextarea } from "@/components/autoResizeTextArea";
+import AutoResizeTextarea from "@/components/autoResizeTextArea";
 import {
   Button,
   Card,
