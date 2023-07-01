@@ -21,6 +21,7 @@ import {
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 const seeds = [
@@ -51,13 +52,23 @@ export default function Header() {
   const isOverMd = useBreakpointValue({ base: false, md: true });
   const [search, setSearch] = useState("");
   const [seed, setSeed] = useState(seeds[0]);
+  const [user, setUser] = useState({});
 
-  useEffect(() => setSeed(seeds[Math.floor(Math.random() * seeds.length)]), []);
+  useEffect(() => {
+    setSeed(seeds[Math.floor(Math.random() * seeds.length)]);
+    axios
+      .get(process.env.NEXT_PUBLIC_AUTH_HOST + "/api/auth/user", {
+        withCredentials: true,
+      })
+      .then((res) => res.data)
+      .then(setUser)
+      .catch(console.error);
+  }, []);
 
   return (
     <Flex
       h={16}
-      px={4}
+      px={[2, null, 4]}
       gap={2}
       alignItems="center"
       justifyContent="space-between"
@@ -138,8 +149,6 @@ export default function Header() {
           </Center>
           <br />
           <MenuDivider />
-          <MenuItem>Your Servers</MenuItem>
-          <MenuItem>Account Settings</MenuItem>
           <MenuItem>Logout</MenuItem>
         </MenuList>
       </Menu>
