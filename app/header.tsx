@@ -21,12 +21,38 @@ import {
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const seeds = [
+  "Shadow",
+  "Oliver",
+  "Maggie",
+  "Sasha",
+  "Nala",
+  "Bear",
+  "Bella",
+  "Simon",
+  "Scooter",
+  "Mimi",
+  "Oscar",
+  "Milo",
+  "Miss kitty",
+  "Cuddles",
+  "Pumpkin",
+  "Chester",
+  "Cali",
+  "Snickers",
+  "Zoey",
+  "Charlie",
+];
 
 export default function Header() {
   const { colorMode, toggleColorMode } = useColorMode();
   const isOverMd = useBreakpointValue({ base: false, md: true });
   const [search, setSearch] = useState("");
+  const [seed, setSeed] = useState(seeds[0]);
+
+  useEffect(() => setSeed(seeds[Math.floor(Math.random() * seeds.length)]), []);
 
   return (
     <Flex
@@ -57,7 +83,7 @@ export default function Header() {
         )}
         <Input
           variant="filled"
-          placeholder="Search"
+          placeholder="Search (Not available yet)"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
@@ -94,7 +120,7 @@ export default function Header() {
         >
           <Avatar
             size={"sm"}
-            src={"https://api.dicebear.com/6.x/personas/svg?seed=Bella"}
+            src={"https://api.dicebear.com/6.x/personas/svg?seed=" + seed}
           />
         </MenuButton>
         <MenuList alignItems={"center"}>
@@ -102,7 +128,7 @@ export default function Header() {
           <Center>
             <Avatar
               size={"2xl"}
-              src={"https://api.dicebear.com/6.x/personas/svg?seed=Bella"}
+              src={"https://api.dicebear.com/6.x/personas/svg?seed=" + seed}
             />
           </Center>
           <br />
