@@ -46,10 +46,37 @@ jobs:
           SSH_USER: ${{ secrets.USER }}
           SSH_KEY: ${{ secrets.KEY }}
 
-      - name: 📥 Pull and Install modules
-        run: ssh srv "cd ${{ github.event.repository.name }} && git checkout main && git pull && npm install"
+      - name: 🚚 Deploy package.json
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.USER }}
+          server: ${{ secrets.HOST }}
+          ssh_private_key: ${{ secrets.KEY }}
+          local_path: ./package.json
+          remote_path: ${{ github.event.repository.name }}/
 
-      - name: 🚚 SFTP Deploy
+      - name: 🚚 Deploy package-lock.json
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.USER }}
+          server: ${{ secrets.HOST }}
+          ssh_private_key: ${{ secrets.KEY }}
+          local_path: ./package-lock.json
+          remote_path: ${{ github.event.repository.name }}/
+
+      - name: 📥 Install modules
+        run: ssh srv "cd ${{ github.event.repository.name }} && npm install"
+
+      - name: 🚚 Deploy .env.production
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.USER }}
+          server: ${{ secrets.HOST }}
+          ssh_private_key: ${{ secrets.KEY }}
+          local_path: ./.env.production
+          remote_path: ${{ github.event.repository.name }}/
+
+      - name: 🚚 Deploy .next
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           username: ${{ secrets.USER }}
