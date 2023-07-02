@@ -56,14 +56,11 @@ jobs:
           server: ${{ secrets.HOST }}
           ssh_private_key: ${{ secrets.KEY }}
           local_path: ./.next/*
-          remote_path: ${{ github.event.repository.name }}/.next.new/
+          remote_path: ${{ github.event.repository.name }}/.next/
           delete_remote_files: true
 
       - name: ⏳ Stop pm2
         run: ssh srv "pm2 stop ${{ github.event.repository.name }}"
-
-      - name: 📦 Update
-        run: ssh srv "cd ${{ github.event.repository.name }} && rm -rf .next && mv .next.new .next"
 
       - name: 🎉 Start pm2
         run: ssh srv "pm2 start ${{ github.event.repository.name }}"
