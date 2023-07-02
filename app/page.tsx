@@ -42,14 +42,20 @@ export default function Page() {
 
   return (
     <>
-      <Flex wrap="wrap" justifyContent="center" gap={4} p={8}>
+      <Flex
+        wrap="wrap"
+        justifyContent="center"
+        gap={4}
+        py={8}
+        px={[4, null, 8]}
+      >
         {colors.map((color, i) => (
           <Card
             key={color}
             variant="filled"
             boxShadow={"md"}
             cursor={"pointer"}
-            w={["100%", "47%", "60", null, "72"]}
+            w={["100%", "48%", "60", null, "72"]}
             bg={
               color == "white"
                 ? colorMode === "dark"
