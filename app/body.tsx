@@ -46,7 +46,8 @@ export default function Body() {
         wrap="wrap"
         justifyContent="center"
         gap={4}
-        py={8}
+        pt={24}
+        pb={8}
         px={[4, null, 8]}
       >
         {colors.map((color, i) => (

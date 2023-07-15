@@ -1,5 +1,4 @@
 "use client";
-import { MoonIcon, SearchIcon, SunIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import {
   Avatar,
@@ -7,6 +6,7 @@ import {
   Center,
   CloseButton,
   Flex,
+  Icon,
   IconButton,
   Image,
   Input,
@@ -22,52 +22,48 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-
-const seeds = [
-  "Shadow",
-  "Oliver",
-  "Maggie",
-  "Sasha",
-  "Nala",
-  "Bear",
-  "Bella",
-  "Simon",
-  "Scooter",
-  "Mimi",
-  "Oscar",
-  "Milo",
-  "Miss kitty",
-  "Cuddles",
-  "Pumpkin",
-  "Chester",
-  "Cali",
-  "Snickers",
-  "Zoey",
-  "Charlie",
-];
+import { RiMoonClearFill } from "react-icons/ri";
+import { HiSun, HiOutlineSearch } from "react-icons/hi";
 
 export default function Header() {
   const { colorMode, toggleColorMode } = useColorMode();
+  const dark = colorMode === "dark";
   const isOverMd = useBreakpointValue({ base: false, md: true });
   const [search, setSearch] = useState("");
-  const [seed, setSeed] = useState(seeds[0]);
+  const [scrollStatus, setScrollStatus] = useState({ up: true, y: 0 });
 
+  const handleWindowScroll = () =>
+    setScrollStatus((prev) => {
+      return {
+        up: window.scrollY < prev.y,
+        y: window.scrollY,
+      };
+    });
   useEffect(() => {
-    setSeed(seeds[Math.floor(Math.random() * seeds.length)]);
+    window.addEventListener("scroll", handleWindowScroll);
+    return () => window.removeEventListener("scroll", handleWindowScroll);
   }, []);
 
   return (
     <Flex
-      position="sticky"
+      position="fixed"
+      w="full"
       h={16}
       px={[2, null, 4]}
       gap={2}
+      zIndex={3}
       alignItems="center"
       justifyContent="space-between"
-      background={colorMode === "dark" ? "gray.800" : "white"}
-      sx={{
-        boxShadow: "0 1px 3px 0 rgb(0 0 0/0.1), 0 1px 2px -1px rgb(0 0 0/0.1)",
-      }}
+      background={dark ? "gray.800" : "white"}
+      transition="transform 0.2s, boxShadow 0.2s"
+      transform={scrollStatus.up ? "" : "translateY(-100%)"}
+      boxShadow={
+        scrollStatus.up
+          ? `0 1px 3px 0 rgb(0 0 0/0.${
+              dark ? 4 : 1
+            }),0 1px 2px -1px rgb(0 0 0/0.${dark ? 4 : 1})`
+          : ""
+      }
     >
       <Link href="/">
         <IconButton
@@ -81,7 +77,7 @@ export default function Header() {
       <InputGroup w={{ base: "md", lg: "xl", xl: "2xl" }} mx="auto">
         {isOverMd && (
           <InputLeftElement>
-            <SearchIcon />
+            <Icon as={HiOutlineSearch} />
           </InputLeftElement>
         )}
         <Input
@@ -104,9 +100,9 @@ export default function Header() {
         colorScheme={colorMode === "dark" ? "yellow" : "gray"}
         icon={
           colorMode === "dark" ? (
-            <SunIcon color="yellow.500" />
+            <Icon as={HiSun} color="yellow.500" />
           ) : (
-            <MoonIcon color="gray.500" />
+            <Icon as={RiMoonClearFill} color="gray.500" />
           )
         }
       />
@@ -124,7 +120,7 @@ export default function Header() {
         >
           <Avatar
             size={"sm"}
-            src={"https://api.dicebear.com/6.x/personas/svg?seed=" + seed}
+            src={"https://api.dicebear.com/6.x/personas/svg"}
           />
         </MenuButton>
         <MenuList alignItems={"center"}>
@@ -132,7 +128,7 @@ export default function Header() {
           <Center>
             <Avatar
               size={"2xl"}
-              src={"https://api.dicebear.com/6.x/personas/svg?seed=" + seed}
+              src={"https://api.dicebear.com/6.x/personas/svg"}
             />
           </Center>
           <br />
