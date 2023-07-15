@@ -72,6 +72,9 @@ export default function Body() {
                   : "gray.50"
                 : color + (colorMode === "dark" ? ".900" : ".100")
             }
+            transition="transform 0.2s"
+            transform={selected == i ? "scale(1.05)" : ""}
+            _hover={{ transform: "scale(1.05)" }}
             onClick={() => {
               setSelected(i);
               onOpen();
@@ -91,7 +94,10 @@ export default function Body() {
       <Modal
         isCentered
         size="xl"
-        onClose={onClose}
+        onClose={() => {
+          onClose();
+          setSelected(-1);
+        }}
         isOpen={isOpen}
         scrollBehavior="inside"
       >
