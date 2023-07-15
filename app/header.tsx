@@ -1,7 +1,6 @@
 "use client";
-
 import { MoonIcon, SearchIcon, SunIcon } from "@chakra-ui/icons";
-import { Image, Link } from "@chakra-ui/next-js";
+import { Link } from "@chakra-ui/next-js";
 import {
   Avatar,
   Button,
@@ -9,6 +8,7 @@ import {
   CloseButton,
   Flex,
   IconButton,
+  Image,
   Input,
   InputGroup,
   InputLeftElement,
@@ -21,7 +21,6 @@ import {
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useEffect, useState } from "react";
 
 const seeds = [
@@ -52,21 +51,14 @@ export default function Header() {
   const isOverMd = useBreakpointValue({ base: false, md: true });
   const [search, setSearch] = useState("");
   const [seed, setSeed] = useState(seeds[0]);
-  const [user, setUser] = useState({});
 
   useEffect(() => {
     setSeed(seeds[Math.floor(Math.random() * seeds.length)]);
-    axios
-      .get(process.env.NEXT_PUBLIC_AUTH_HOST + "/api/auth/user", {
-        withCredentials: true,
-      })
-      .then((res) => res.data)
-      .then(setUser)
-      .catch(console.error);
   }, []);
 
   return (
     <Flex
+      position="sticky"
       h={16}
       px={[2, null, 4]}
       gap={2}

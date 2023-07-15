@@ -1,9 +1,7 @@
 "use client";
-
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Roboto } from "next/font/google";
-import Header from "./header";
 import { mode } from "@chakra-ui/theme-tools";
 
 const roboto = Roboto({
@@ -26,10 +24,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       <CacheProvider>
-        <ChakraProvider theme={theme}>
-          <Header />
-          {children}
-        </ChakraProvider>
+        <ChakraProvider theme={theme}>{children}</ChakraProvider>
       </CacheProvider>
     </>
   );
