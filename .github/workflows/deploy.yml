@@ -94,6 +94,9 @@ jobs:
           local_path: ./prisma/schema.prisma
           remote_path: ${{ github.event.repository.name }}/prisma/
 
+      - name: 📥 Generate prisma modules
+        run: ssh srv "cd ${{ github.event.repository.name }} && npx prisma generate"
+
       - name: 🚚 Deploy .next
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
