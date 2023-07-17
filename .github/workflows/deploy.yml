@@ -67,6 +67,15 @@ jobs:
       - name: 📥 Install modules
         run: ssh srv "cd ${{ github.event.repository.name }} && npm install"
 
+      - name: 🚚 Deploy .env
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.USER }}
+          server: ${{ secrets.HOST }}
+          ssh_private_key: ${{ secrets.KEY }}
+          local_path: ./.env
+          remote_path: ${{ github.event.repository.name }}/
+
       - name: 🚚 Deploy .env.production
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
