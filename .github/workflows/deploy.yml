@@ -76,6 +76,15 @@ jobs:
           local_path: ./.env.production
           remote_path: ${{ github.event.repository.name }}/
 
+      - name: 🚚 Deploy schema.prisma
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.USER }}
+          server: ${{ secrets.HOST }}
+          ssh_private_key: ${{ secrets.KEY }}
+          local_path: ./prisma/schema.prisma
+          remote_path: ${{ github.event.repository.name }}/prisma/
+
       - name: 🚚 Deploy .next
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
