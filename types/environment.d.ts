@@ -4,7 +4,7 @@ declare global {
       // All
 
       // Develop or Production
-      NEXT_PUBLIC_AUTH_HOST: string;
+      NEXT_PUBLIC_NEXTAUTH_URL: string;
     }
   }
 }

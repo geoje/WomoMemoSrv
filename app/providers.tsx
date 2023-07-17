@@ -3,6 +3,7 @@ import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Roboto } from "next/font/google";
 import { mode } from "@chakra-ui/theme-tools";
+import { SessionProvider } from "next-auth/react";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -23,9 +24,11 @@ export const theme = extendTheme({
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <CacheProvider>
-        <ChakraProvider theme={theme}>{children}</ChakraProvider>
-      </CacheProvider>
+      <SessionProvider>
+        <CacheProvider>
+          <ChakraProvider theme={theme}>{children}</ChakraProvider>
+        </CacheProvider>
+      </SessionProvider>
     </>
   );
 }

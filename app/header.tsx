@@ -2,6 +2,7 @@
 import { Link } from "@chakra-ui/next-js";
 import {
   Avatar,
+  Box,
   Button,
   Center,
   CloseButton,
@@ -18,19 +19,26 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Text,
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 import { RiMoonClearFill } from "react-icons/ri";
 import { HiSun, HiOutlineSearch } from "react-icons/hi";
+import { PiUserCircleDuotone } from "react-icons/pi";
+import { RxExit } from "react-icons/rx";
+import { providers } from "@/lib/auth";
 
 export default function Header() {
   const { colorMode, toggleColorMode } = useColorMode();
   const dark = colorMode === "dark";
   const isOverMd = useBreakpointValue({ base: false, md: true });
+  const { data: session } = useSession();
   const [search, setSearch] = useState("");
   const [scrollStatus, setScrollStatus] = useState({ up: true, y: 0 });
+  const [loginUrl, setLoginUrl] = useState("");
 
   const handleWindowScroll = () =>
     setScrollStatus((prev) => {
@@ -40,6 +48,15 @@ export default function Header() {
       };
     });
   useEffect(() => {
+    setLoginUrl(
+      process.env.NEXT_PUBLIC_NEXTAUTH_URL +
+        "/login?callbackUrl=" +
+        encodeURIComponent(
+          typeof window !== "undefined" && window.location.origin
+            ? window.location.origin
+            : ""
+        )
+    );
     window.addEventListener("scroll", handleWindowScroll);
     return () => window.removeEventListener("scroll", handleWindowScroll);
   }, []);
@@ -76,7 +93,7 @@ export default function Header() {
       </Link>
       <InputGroup w={{ base: "md", lg: "xl", xl: "2xl" }} mx="auto">
         {isOverMd && (
-          <InputLeftElement>
+          <InputLeftElement color={dark ? "whiteAlpha.400" : "gray.500"}>
             <Icon as={HiOutlineSearch} />
           </InputLeftElement>
         )}
@@ -106,40 +123,75 @@ export default function Header() {
           )
         }
       />
-
-      <Menu>
-        <MenuButton
-          as={Button}
-          minW={12}
-          w={12}
-          h={12}
-          mr={[0, null, 4]}
-          p={0}
-          variant="ghost"
-          rounded="full"
-        >
-          <Avatar
-            size={"sm"}
-            src={"https://api.dicebear.com/6.x/personas/svg"}
-          />
-        </MenuButton>
-        <MenuList alignItems={"center"}>
-          <br />
-          <Center>
-            <Avatar
-              size={"2xl"}
-              src={"https://api.dicebear.com/6.x/personas/svg"}
-            />
-          </Center>
-          <br />
-          <Center>
-            <p>Username</p>
-          </Center>
-          <br />
-          <MenuDivider />
-          <MenuItem>Logout</MenuItem>
-        </MenuList>
-      </Menu>
+      {session ? (
+        <Menu>
+          <MenuButton
+            as={Button}
+            minW={12}
+            w={12}
+            h={12}
+            p={0}
+            variant="ghost"
+            rounded="full"
+          >
+            {session?.user?.image ? (
+              <Avatar w={9} h={9} src={session?.user?.image ?? ""} />
+            ) : (
+              <Icon as={PiUserCircleDuotone} />
+            )}
+          </MenuButton>
+          <MenuList width="fit-content" alignItems={"center"}>
+            <Box
+              px={3}
+              py={1.5}
+              fontWeight={600}
+              fontSize="xs"
+              color={dark ? "gray.400" : "gray.500"}
+            >
+              <Flex gap={2} alignItems="center">
+                {session.user?.provider == "naver" ? (
+                  <Center
+                    p={1}
+                    alignItems="center"
+                    bg={"#03c75a"}
+                    color="white"
+                  >
+                    <Icon
+                      as={
+                        providers.find((p) => p.alt == session.user?.provider)
+                          ?.icon
+                      }
+                      w={2}
+                      h={2}
+                    />
+                  </Center>
+                ) : (
+                  <Icon
+                    as={
+                      providers.find((p) => p.alt == session.user?.provider)
+                        ?.icon
+                    }
+                    w={4}
+                    h={4}
+                  />
+                )}
+                <Text>{session.user.name}</Text>
+              </Flex>
+              <Text mt={1}>{session.user.email}</Text>
+            </Box>
+            <MenuDivider />
+            <MenuItem icon={<Icon as={RxExit} />} onClick={() => signOut()}>
+              {"Logout"}
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      ) : (
+        <Link href={loginUrl}>
+          <Button colorScheme="yellow" fontSize="sm">
+            {"Login"}
+          </Button>
+        </Link>
+      )}
     </Flex>
   );
 }

@@ -50,7 +50,7 @@ const handler = NextAuth({
         secure: useSecureCookies,
         domain: new URL(
           process.env.NEXT_PUBLIC_NEXTAUTH_URL ?? ""
-        ).hostname.replace("www.", ""),
+        ).hostname.replace("www", ""),
       },
     },
   },
