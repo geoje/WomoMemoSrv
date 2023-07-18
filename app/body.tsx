@@ -30,6 +30,19 @@ export default function Body() {
   const [memos, setMemos] = useState(defaultMemos);
   const [modalMemo, setModalMemo] = useState<Memo>();
 
+  const saveModalMemo = () => {
+    if (!modalMemo || (modalMemo?.title == "" && modalMemo?.content == ""))
+      return;
+    const idx =
+      modalMemo?.id == -1
+        ? -1
+        : memos.findIndex((memo) => memo.id == modalMemo?.id);
+    if (idx == -1) setMemos([modalMemo, ...memos]);
+    memos[idx] = modalMemo;
+    setMemos(memos);
+    setModalMemo(undefined);
+  };
+
   return (
     <>
       <title>Womo Memo</title>
@@ -97,21 +110,7 @@ export default function Body() {
       <Modal
         isCentered
         size="xl"
-        onClose={() => {
-          if (
-            !modalMemo ||
-            (modalMemo?.title == "" && modalMemo?.content == "")
-          )
-            return;
-          const idx =
-            modalMemo?.id == -1
-              ? -1
-              : memos.findIndex((memo) => memo.id == modalMemo?.id);
-          if (idx == -1) setMemos([modalMemo, ...memos]);
-          memos[idx] = modalMemo;
-          setMemos(memos);
-          setModalMemo(undefined);
-        }}
+        onClose={saveModalMemo}
         isOpen={modalMemo != undefined}
         scrollBehavior="inside"
       >
@@ -127,16 +126,37 @@ export default function Body() {
           }
         >
           <ModalHeader>
-            <Input variant="unstyled" placeholder="Title" fontWeight="bold" />
+            <Input
+              variant="unstyled"
+              placeholder="Title"
+              fontWeight="bold"
+              value={modalMemo?.title}
+              onChange={(e) =>
+                setModalMemo({
+                  ...(modalMemo ?? emptyMemo),
+                  title: e.currentTarget.value,
+                })
+              }
+            />
           </ModalHeader>
           <ModalBody>
-            <AutoResizeTextarea variant="unstyled" placeholder="Content" />
+            <AutoResizeTextarea
+              variant="unstyled"
+              placeholder="Content"
+              value={modalMemo?.content}
+              onChange={(e) =>
+                setModalMemo({
+                  ...(modalMemo ?? emptyMemo),
+                  content: e.currentTarget.value,
+                })
+              }
+            />
           </ModalBody>
           <ModalFooter>
             <Button
               variant="ghost"
               colorScheme={dark ? undefined : "blackAlpha"}
-              onClick={() => setModalMemo(undefined)}
+              onClick={saveModalMemo}
             >
               Close
             </Button>
