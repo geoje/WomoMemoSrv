@@ -187,9 +187,7 @@ export default function Header() {
         </Menu>
       ) : (
         <Link href={loginUrl}>
-          <Button colorScheme="yellow" fontSize="sm">
-            {"Login"}
-          </Button>
+          <Button fontSize="sm">{"Login"}</Button>
         </Link>
       )}
     </Flex>
