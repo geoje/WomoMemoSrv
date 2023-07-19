@@ -34,13 +34,13 @@ export default function Body() {
 
   const [memos, setMemos] = useState(defaultMemos);
   const [modalMemo, setModalMemo] = useState<Memo>();
-  const masonryRef = useRef(null);
+  const masonryRef = useRef<MasonryGrid>(null);
 
   const saveModalMemo = () => {
     if (!modalMemo || (modalMemo?.title == "" && modalMemo?.content == "")) {
       setModalMemo(undefined);
+      masonryRef.current?.renderItems();
       console.log(masonryRef.current);
-
       return;
     }
 
@@ -71,7 +71,7 @@ export default function Body() {
     <>
       <title>Womo Memo</title>
       <Box pt={24} pb={8} px={[4, null, 8]}>
-        <MasonryGrid align="center" gap={16}>
+        <MasonryGrid align="center" gap={16} ref={masonryRef}>
           {memos.map((memo) => (
             <Card
               key={memo.id}
