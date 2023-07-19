@@ -1,27 +1,32 @@
 "use client";
 import AutoResizeTextarea from "@/components/autoResizeTextArea";
 import {
+  Box,
   Button,
   Card,
   CardBody,
   CardHeader,
-  Flex,
   Heading,
   Icon,
   IconButton,
   Input,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spacer,
   Text,
+  Tooltip,
   useColorMode,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Memo, defaultMemos, emptyMemo } from "@/lib/memo";
 import { FiPlus } from "react-icons/fi";
+import { LuPalette, LuTrash2, LuUndo2, LuRedo2 } from "react-icons/lu";
+import { MasonryGrid } from "@egjs/react-grid";
 
 export default function Body() {
   const { colorMode } = useColorMode();
@@ -29,69 +34,90 @@ export default function Body() {
 
   const [memos, setMemos] = useState(defaultMemos);
   const [modalMemo, setModalMemo] = useState<Memo>();
+  const masonryRef = useRef(null);
 
   const saveModalMemo = () => {
-    if (!modalMemo || (modalMemo?.title == "" && modalMemo?.content == ""))
+    if (!modalMemo || (modalMemo?.title == "" && modalMemo?.content == "")) {
+      setModalMemo(undefined);
+      console.log(masonryRef.current);
+
       return;
+    }
+
     const idx =
       modalMemo?.id == -1
         ? -1
         : memos.findIndex((memo) => memo.id == modalMemo?.id);
-    if (idx == -1) setMemos([modalMemo, ...memos]);
-    memos[idx] = modalMemo;
-    setMemos(memos);
-    setModalMemo(undefined);
+    if (idx == -1) {
+      setMemos([
+        {
+          ...modalMemo,
+          id: memos.reduce((acc, { id }) => Math.max(acc, id) + 1, -1),
+          modified: new Date(),
+        },
+        ...memos,
+      ]);
+      setModalMemo(undefined);
+      return;
+    } else {
+      let tempMemos = [...memos];
+      tempMemos[idx] = { ...modalMemo };
+      setMemos(tempMemos);
+      setModalMemo(undefined);
+    }
   };
 
   return (
     <>
       <title>Womo Memo</title>
-      <Flex
-        wrap="wrap"
-        justifyContent="center"
-        gap={4}
-        pt={24}
-        pb={8}
-        px={[4, null, 8]}
-      >
-        {memos.map((memo) => (
-          <Card
-            key={memo.id}
-            variant="filled"
-            boxShadow={"md"}
-            cursor={"pointer"}
-            w={["100%", "48%", "60", null, "72"]}
-            bg={
-              memo.color == "white"
-                ? dark
-                  ? "whiteAlpha.300"
-                  : "white"
-                : memo.color + (dark ? ".900" : ".100")
-            }
-            border="1px"
-            borderColor={
-              memo.color == "white"
-                ? dark
-                  ? "gray.700"
-                  : "gray.50"
-                : memo.color + (dark ? ".900" : ".100")
-            }
-            transition="transform 0.2s"
-            transform={modalMemo?.id == memo.id ? "scale(1.05)" : ""}
-            _hover={{ transform: "scale(1.05)" }}
-            onClick={() => setModalMemo(memo)}
-          >
-            <CardHeader pb={0}>
-              <Heading size="sm" opacity={dark ? 0.8 : 1}>
-                {memo.title}
-              </Heading>
-            </CardHeader>
-            <CardBody>
-              <Text opacity={dark ? 0.8 : 1}>{memo.content}</Text>
-            </CardBody>
-          </Card>
-        ))}
-      </Flex>
+      <Box pt={24} pb={8} px={[4, null, 8]}>
+        <MasonryGrid align="center" gap={16}>
+          {memos.map((memo) => (
+            <Card
+              key={memo.id}
+              variant="filled"
+              boxShadow={"md"}
+              cursor={"pointer"}
+              w={["100%", "48%", "60", null, "72"]}
+              bg={
+                memo.color == "white"
+                  ? dark
+                    ? "whiteAlpha.300"
+                    : "white"
+                  : memo.color + (dark ? ".900" : ".100")
+              }
+              border="1px"
+              borderColor={
+                memo.color == "white"
+                  ? dark
+                    ? "gray.700"
+                    : "gray.50"
+                  : memo.color + (dark ? ".900" : ".100")
+              }
+              transition="0.2s"
+              transform={modalMemo?.id == memo.id ? "scale(1.01)" : ""}
+              _hover={{ transform: "scale(1.01)" }}
+              onClick={() => setModalMemo(memo)}
+            >
+              <CardHeader pb={0}>
+                <Heading size="sm" opacity={dark ? 0.8 : 1}>
+                  {memo.title}
+                </Heading>
+              </CardHeader>
+              <CardBody
+                maxHeight="private name() {
+              
+            }"
+                overflow="hidden"
+              >
+                <Text opacity={dark ? 0.8 : 1} whiteSpace="pre-line">
+                  {memo.content}
+                </Text>
+              </CardBody>
+            </Card>
+          ))}
+        </MasonryGrid>
+      </Box>
       <IconButton
         position="fixed"
         right={6}
@@ -139,6 +165,7 @@ export default function Body() {
               }
             />
           </ModalHeader>
+          <ModalCloseButton />
           <ModalBody>
             <AutoResizeTextarea
               variant="unstyled"
@@ -153,13 +180,50 @@ export default function Body() {
             />
           </ModalBody>
           <ModalFooter>
-            <Button
-              variant="ghost"
-              colorScheme={dark ? undefined : "blackAlpha"}
-              onClick={saveModalMemo}
-            >
-              Close
-            </Button>
+            <Spacer />
+            {[
+              { label: "Color", icon: LuPalette, onClick: () => {} },
+              {
+                label: "Delete",
+                icon: LuTrash2,
+                onClick: () => {
+                  if (modalMemo?.id != -1) {
+                    let tempMemos = [...memos];
+                    tempMemos.splice(
+                      memos.findIndex((memo) => memo.id == modalMemo?.id),
+                      1
+                    );
+                    setMemos(tempMemos);
+                  }
+                  setModalMemo(undefined);
+                },
+              },
+              {
+                label: "Undo",
+                icon: LuUndo2,
+                isDisable: true,
+                onClick: () => {},
+              },
+              {
+                label: "Redo",
+                icon: LuRedo2,
+                isDisable: true,
+                onClick: () => {},
+              },
+            ].map((tool) => (
+              <Tooltip key={tool.label} label={tool.label} placement="top">
+                <IconButton
+                  aria-label={tool.label}
+                  variant="ghost"
+                  borderRadius="full"
+                  color={dark ? "white" : "gray.700"}
+                  colorScheme={dark ? undefined : "blackAlpha"}
+                  icon={<Icon as={tool.icon} boxSize={5} />}
+                  isDisabled={tool.isDisable}
+                  onClick={tool.onClick}
+                />
+              </Tooltip>
+            ))}
           </ModalFooter>
         </ModalContent>
       </Modal>
