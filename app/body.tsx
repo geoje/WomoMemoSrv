@@ -17,6 +17,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Spacer,
   Text,
   Tooltip,
@@ -27,6 +31,7 @@ import { Memo, defaultMemos, emptyMemo } from "@/lib/memo";
 import { FiPlus } from "react-icons/fi";
 import { LuPalette, LuTrash2, LuUndo2, LuRedo2 } from "react-icons/lu";
 import { MasonryGrid } from "@egjs/react-grid";
+import { IconType } from "react-icons/lib";
 
 export default function Body() {
   const { colorMode } = useColorMode();
@@ -37,35 +42,53 @@ export default function Body() {
   const masonryRef = useRef<MasonryGrid>(null);
 
   const saveModalMemo = () => {
-    if (!modalMemo || (modalMemo?.title == "" && modalMemo?.content == "")) {
-      setModalMemo(undefined);
-      masonryRef.current?.renderItems();
-      console.log(masonryRef.current);
-      return;
+    if (modalMemo && (modalMemo?.title != "" || modalMemo?.content != "")) {
+      const idx =
+        modalMemo?.id == -1
+          ? -1
+          : memos.findIndex((memo) => memo.id == modalMemo?.id);
+      if (idx == -1) {
+        setMemos([
+          {
+            ...modalMemo,
+            id: memos.reduce((acc, { id }) => Math.max(acc, id) + 1, -1),
+            modified: new Date(),
+          },
+          ...memos,
+        ]);
+      } else {
+        let tempMemos = [...memos];
+        tempMemos[idx] = { ...modalMemo };
+        setMemos(tempMemos);
+      }
     }
-
-    const idx =
-      modalMemo?.id == -1
-        ? -1
-        : memos.findIndex((memo) => memo.id == modalMemo?.id);
-    if (idx == -1) {
-      setMemos([
-        {
-          ...modalMemo,
-          id: memos.reduce((acc, { id }) => Math.max(acc, id) + 1, -1),
-          modified: new Date(),
-        },
-        ...memos,
-      ]);
-      setModalMemo(undefined);
-      return;
-    } else {
-      let tempMemos = [...memos];
-      tempMemos[idx] = { ...modalMemo };
-      setMemos(tempMemos);
-      setModalMemo(undefined);
-    }
+    setModalMemo(undefined);
+    masonryRef.current?.renderItems({ useResize: true });
   };
+  const ToolIconButton = ({
+    label,
+    icon,
+    isDisable,
+    onClick,
+  }: {
+    label: string;
+    icon: IconType;
+    isDisable?: boolean;
+    onClick?: () => void;
+  }) => (
+    <Tooltip key={label} label={label} placement="top">
+      <IconButton
+        aria-label={label}
+        variant="ghost"
+        borderRadius="full"
+        color={dark ? "white" : "gray.700"}
+        colorScheme={dark ? undefined : "blackAlpha"}
+        icon={<Icon as={icon} boxSize={5} />}
+        isDisabled={isDisable}
+        onClick={onClick}
+      />
+    </Tooltip>
+  );
 
   return (
     <>
@@ -104,12 +127,7 @@ export default function Body() {
                   {memo.title}
                 </Heading>
               </CardHeader>
-              <CardBody
-                maxHeight="private name() {
-              
-            }"
-                overflow="hidden"
-              >
+              <CardBody overflow="hidden">
                 <Text opacity={dark ? 0.8 : 1} whiteSpace="pre-line">
                   {memo.content}
                 </Text>
@@ -151,7 +169,7 @@ export default function Body() {
               : modalMemo?.color + (dark ? ".900" : ".100")
           }
         >
-          <ModalHeader>
+          <ModalHeader pr={14}>
             <Input
               variant="unstyled"
               placeholder="Title"
@@ -181,8 +199,31 @@ export default function Body() {
           </ModalBody>
           <ModalFooter>
             <Spacer />
+            <Popover
+              returnFocusOnClose={false}
+              placement="top"
+              closeOnBlur={false}
+            >
+              <PopoverTrigger>
+                <ToolIconButton label="Color" icon={LuPalette} />
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverBody>
+                  Are you sure you want to continue with your action?
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
             {[
-              { label: "Color", icon: LuPalette, onClick: () => {} },
+              {
+                label: "Undo",
+                icon: LuUndo2,
+                isDisable: true,
+              },
+              {
+                label: "Redo",
+                icon: LuRedo2,
+                isDisable: true,
+              },
               {
                 label: "Delete",
                 icon: LuTrash2,
@@ -198,32 +239,7 @@ export default function Body() {
                   setModalMemo(undefined);
                 },
               },
-              {
-                label: "Undo",
-                icon: LuUndo2,
-                isDisable: true,
-                onClick: () => {},
-              },
-              {
-                label: "Redo",
-                icon: LuRedo2,
-                isDisable: true,
-                onClick: () => {},
-              },
-            ].map((tool) => (
-              <Tooltip key={tool.label} label={tool.label} placement="top">
-                <IconButton
-                  aria-label={tool.label}
-                  variant="ghost"
-                  borderRadius="full"
-                  color={dark ? "white" : "gray.700"}
-                  colorScheme={dark ? undefined : "blackAlpha"}
-                  icon={<Icon as={tool.icon} boxSize={5} />}
-                  isDisabled={tool.isDisable}
-                  onClick={tool.onClick}
-                />
-              </Tooltip>
-            ))}
+            ].map(ToolIconButton)}
           </ModalFooter>
         </ModalContent>
       </Modal>
