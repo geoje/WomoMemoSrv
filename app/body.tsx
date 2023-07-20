@@ -27,7 +27,13 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { Memo, defaultMemos, emptyMemo } from "@/lib/memo";
+import {
+  Memo,
+  defaultMemos,
+  emptyMemo,
+  getBgColor,
+  getBorderColor,
+} from "@/lib/memo";
 import { FiPlus } from "react-icons/fi";
 import { LuPalette, LuTrash2, LuUndo2, LuRedo2 } from "react-icons/lu";
 import { MasonryGrid } from "@egjs/react-grid";
@@ -102,21 +108,9 @@ export default function Body() {
               boxShadow={"md"}
               cursor={"pointer"}
               w={["100%", "48%", "60", null, "72"]}
-              bg={
-                memo.color == "white"
-                  ? dark
-                    ? "whiteAlpha.300"
-                    : "white"
-                  : memo.color + (dark ? ".900" : ".100")
-              }
+              bg={getBgColor(memo.color, dark)}
               border="1px"
-              borderColor={
-                memo.color == "white"
-                  ? dark
-                    ? "gray.700"
-                    : "gray.50"
-                  : memo.color + (dark ? ".900" : ".100")
-              }
+              borderColor={getBorderColor(memo.color, dark)}
               transition="0.2s"
               transform={modalMemo?.id == memo.id ? "scale(1.01)" : ""}
               _hover={{ transform: "scale(1.01)" }}
@@ -161,13 +155,8 @@ export default function Body() {
         <ModalOverlay />
         <ModalContent
           mx="4"
-          bg={
-            modalMemo?.color == "white"
-              ? dark
-                ? "whiteAlpha.300"
-                : "white"
-              : modalMemo?.color + (dark ? ".900" : ".100")
-          }
+          transition="background-color 0.2s"
+          bg={getBgColor(modalMemo?.color ?? "white", dark)}
         >
           <ModalHeader pr={14}>
             <Input
@@ -205,11 +194,40 @@ export default function Body() {
               closeOnBlur={false}
             >
               <PopoverTrigger>
-                <ToolIconButton label="Color" icon={LuPalette} />
+                <Box>
+                  <ToolIconButton label="Color" icon={LuPalette} />
+                </Box>
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent
+                border={0}
+                bgColor={dark ? "whiteAlpha.100" : "blackAlpha.100"}
+              >
                 <PopoverBody>
-                  Are you sure you want to continue with your action?
+                  {defaultMemos.map(({ color }) => (
+                    <Button
+                      key={color}
+                      minW={6}
+                      w={6}
+                      h={6}
+                      m={1}
+                      p={0}
+                      bgColor={getBgColor(color, dark)}
+                      border={(modalMemo?.color == color ? 2 : 1) + "px"}
+                      borderColor={
+                        modalMemo?.color == color
+                          ? dark
+                            ? "whiteAlpha.600"
+                            : "blackAlpha.600"
+                          : getBorderColor(color, dark)
+                      }
+                      _hover={{
+                        bgColor: getBgColor(color, dark),
+                      }}
+                      onClick={() =>
+                        setModalMemo({ ...(modalMemo ?? emptyMemo), color })
+                      }
+                    />
+                  ))}
                 </PopoverBody>
               </PopoverContent>
             </Popover>

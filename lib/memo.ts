@@ -23,7 +23,7 @@ export const defaultMemos: Memo[] = [
 ].map((c, i) => ({
   id: i,
   userId: "0",
-  title: c.toUpperCase(),
+  title: c.charAt(0).toUpperCase() + c.slice(1),
   content: c,
   checkBox: false,
   color: c,
@@ -39,3 +39,18 @@ export const emptyMemo: Memo = {
   checkBox: false,
   modified: new Date(),
 };
+
+export function getBgColor(color: string, dark: boolean) {
+  return color == "white"
+    ? dark
+      ? "whiteAlpha.300"
+      : "white"
+    : color + (dark ? ".900" : ".100");
+}
+export function getBorderColor(color: string, dark: boolean) {
+  return color == "white"
+    ? dark
+      ? "gray.700"
+      : "gray.50"
+    : color + (dark ? ".900" : ".100");
+}
