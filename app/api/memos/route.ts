@@ -9,7 +9,10 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   return NextResponse.json(
-    await prisma?.memo.findMany({ where: { userId: session.user.id } })
+    await prisma?.memo.findMany({
+      where: { userId: session.user.id },
+      orderBy: { id: "desc" },
+    })
   );
 }
 

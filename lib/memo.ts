@@ -8,7 +8,7 @@ export type Memo = {
   updatedAt: Date;
 };
 
-export const defaultMemos: Memo[] = [
+export const colors = [
   "white",
   "gray",
   "red",
@@ -20,15 +20,7 @@ export const defaultMemos: Memo[] = [
   "cyan",
   "purple",
   "pink",
-].map((c, i) => ({
-  id: i,
-  userId: "0",
-  title: c.charAt(0).toUpperCase() + c.slice(1),
-  content: c,
-  checkBox: false,
-  color: c,
-  updatedAt: new Date(),
-}));
+];
 
 export const emptyMemo: Memo = {
   id: -1,

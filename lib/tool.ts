@@ -18,3 +18,8 @@ export function compareObject(arg1: any, arg2: any): boolean {
   }
   return false;
 }
+
+export const fetcher = (
+  input: RequestInfo | URL,
+  init?: RequestInit | undefined
+) => fetch(input, init).then((res) => res.json());

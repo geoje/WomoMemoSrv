@@ -27,9 +27,10 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
+import useSWR from "swr";
 import {
   Memo,
-  defaultMemos,
+  colors,
   emptyMemo,
   getBgColor,
   getBorderColor,
@@ -38,34 +39,46 @@ import { FiPlus } from "react-icons/fi";
 import { LuPalette, LuTrash2, LuUndo2, LuRedo2 } from "react-icons/lu";
 import { MasonryGrid } from "@egjs/react-grid";
 import { IconType } from "react-icons/lib";
+import { fetcher } from "@/lib/tool";
+import { useSession } from "next-auth/react";
 
 export default function Body() {
   const { colorMode } = useColorMode();
   const dark = colorMode === "dark";
 
-  const [memos, setMemos] = useState(defaultMemos);
+  const { data: session } = useSession();
+  let { data: memos } = useSWR<Memo[]>("/api/memos", fetcher, {
+    refreshInterval: session ? 1000 : 0,
+    onSuccess: () => masonryRef.current?.renderItems({ useResize: true }),
+  });
   const [modalMemo, setModalMemo] = useState<Memo>();
   const masonryRef = useRef<MasonryGrid>(null);
 
   const saveModalMemo = () => {
-    if (modalMemo && (modalMemo?.title != "" || modalMemo?.content != "")) {
+    if (
+      memos &&
+      modalMemo &&
+      (modalMemo?.title != "" || modalMemo?.content != "")
+    ) {
       const idx =
         modalMemo?.id == -1
           ? -1
           : memos.findIndex((memo) => memo.id == modalMemo?.id);
       if (idx == -1) {
-        setMemos([
-          {
-            ...modalMemo,
-            id: memos.reduce((acc, { id }) => Math.max(acc, id) + 1, -1),
-            updatedAt: new Date(),
-          },
-          ...memos,
-        ]);
+        fetch("/api/memos", {
+          method: "POST",
+          body: JSON.stringify(modalMemo),
+        });
+        memos.unshift({
+          ...modalMemo,
+          updatedAt: new Date(),
+        });
       } else {
-        let tempMemos = [...memos];
-        tempMemos[idx] = { ...modalMemo };
-        setMemos(tempMemos);
+        fetch("/api/memos/" + modalMemo?.id, {
+          method: "PUT",
+          body: JSON.stringify(modalMemo),
+        });
+        memos[idx] = modalMemo;
       }
     }
     setModalMemo(undefined);
@@ -101,33 +114,35 @@ export default function Body() {
       <title>Womo Memo</title>
       <Box pt={24} pb={8} px={[4, null, 8]}>
         <MasonryGrid align="center" gap={16} ref={masonryRef}>
-          {memos.map((memo) => (
-            <Card
-              key={memo.id}
-              variant="filled"
-              boxShadow={"md"}
-              cursor={"pointer"}
-              w={["100%", "48%", "60", null, "72"]}
-              bg={getBgColor(memo.color, dark)}
-              border="1px"
-              borderColor={getBorderColor(memo.color, dark)}
-              transition="0.2s"
-              transform={modalMemo?.id == memo.id ? "scale(1.01)" : ""}
-              _hover={{ transform: "scale(1.01)" }}
-              onClick={() => setModalMemo(memo)}
-            >
-              <CardHeader pb={0}>
-                <Heading size="sm" opacity={dark ? 0.8 : 1}>
-                  {memo.title}
-                </Heading>
-              </CardHeader>
-              <CardBody overflow="hidden">
-                <Text opacity={dark ? 0.8 : 1} whiteSpace="pre-line">
-                  {memo.content}
-                </Text>
-              </CardBody>
-            </Card>
-          ))}
+          {memos &&
+            memos instanceof Array &&
+            memos.map((memo) => (
+              <Card
+                key={memo.id}
+                variant="filled"
+                boxShadow={"md"}
+                cursor={"pointer"}
+                w={["100%", "48%", "60", null, "72"]}
+                bg={getBgColor(memo.color, dark)}
+                border="1px"
+                borderColor={getBorderColor(memo.color, dark)}
+                transition="0.2s"
+                transform={modalMemo?.id == memo.id ? "scale(1.01)" : ""}
+                _hover={{ transform: "scale(1.01)" }}
+                onClick={() => setModalMemo(memo)}
+              >
+                <CardHeader pb={0}>
+                  <Heading size="sm" opacity={dark ? 0.8 : 1}>
+                    {memo.title}
+                  </Heading>
+                </CardHeader>
+                <CardBody overflow="hidden">
+                  <Text opacity={dark ? 0.8 : 1} whiteSpace="pre-line">
+                    {memo.content}
+                  </Text>
+                </CardBody>
+              </Card>
+            ))}
         </MasonryGrid>
       </Box>
       <IconButton
@@ -203,8 +218,12 @@ export default function Body() {
                 bgColor={dark ? "whiteAlpha.100" : "blackAlpha.100"}
               >
                 <PopoverBody>
-                  {defaultMemos.map(({ color, title }) => (
-                    <Tooltip key={color} label={title} placement="top">
+                  {colors.map((color) => (
+                    <Tooltip
+                      key={color}
+                      label={color.charAt(0).toUpperCase() + color.slice(1)}
+                      placement="top"
+                    >
                       <Button
                         minW={6}
                         w={6}
@@ -247,13 +266,12 @@ export default function Body() {
                 label: "Delete",
                 icon: LuTrash2,
                 onClick: () => {
-                  if (modalMemo?.id != -1) {
-                    let tempMemos = [...memos];
-                    tempMemos.splice(
-                      memos.findIndex((memo) => memo.id == modalMemo?.id),
+                  if (memos && modalMemo && modalMemo.id != -1) {
+                    memos.splice(
+                      memos.findIndex((memo) => memo.id == modalMemo.id),
                       1
                     );
-                    setMemos(tempMemos);
+                    fetch("/api/memos/" + modalMemo?.id, { method: "DELETE" });
                   }
                   setModalMemo(undefined);
                 },

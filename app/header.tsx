@@ -162,7 +162,12 @@ export default function Header() {
               rounded="full"
             >
               {session?.user?.image ? (
-                <Avatar w={9} h={9} src={session?.user?.image ?? ""} />
+                <Avatar
+                  w={9}
+                  h={9}
+                  src={session?.user?.image ?? ""}
+                  referrerPolicy="no-referrer"
+                />
               ) : (
                 <Icon as={PiUserCircleDuotone} />
               )}
