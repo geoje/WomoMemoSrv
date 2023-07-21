@@ -216,6 +216,8 @@ export default function Body() {
               <PopoverContent
                 border={0}
                 bgColor={dark ? "whiteAlpha.100" : "blackAlpha.100"}
+                backdropFilter="auto"
+                backdropBlur="2px"
               >
                 <PopoverBody>
                   {colors.map((color) => (
