@@ -2,6 +2,7 @@ import { emptyMemo } from "@/lib/memo";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
@@ -15,7 +16,7 @@ export async function GET(
   if (isNaN(parseInt(params.id)))
     return NextResponse.json({ error: "Unvalid id" }, { status: 400 });
 
-  const memo = await prisma?.memo.findFirst({
+  const memo = await prisma.memo.findFirst({
     where: { id: parseInt(params.id), userId: session.user.id },
   });
   if (!memo || !Object.keys(memo))
@@ -49,7 +50,7 @@ export async function PUT(
   if (isNaN(parseInt(params.id)))
     return NextResponse.json({ error: "Unvalid id" }, { status: 400 });
 
-  const memo = await prisma?.memo.update({
+  const memo = await prisma.memo.update({
     where: { id: parseInt(params.id), userId: session.user.id },
     data: {
       title: data.title,
@@ -74,7 +75,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const memo = await prisma?.memo.delete({
+    const memo = await prisma.memo.delete({
       where: { id: parseInt(params.id), userId: session.user.id },
     });
     return NextResponse.json(memo);
