@@ -2,6 +2,7 @@ import { emptyMemo } from "@/lib/memo";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -9,7 +10,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   return NextResponse.json(
-    await prisma?.memo.findMany({
+    await prisma.memo.findMany({
       where: { userId: session.user.id },
       orderBy: { id: "desc" },
     })
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
 
-  const memo = await prisma?.memo.create({
+  const memo = await prisma.memo.create({
     data: {
       userId: session.user.id,
       title: data.title,
