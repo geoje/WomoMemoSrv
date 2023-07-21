@@ -1,3 +1,5 @@
+import type { NextAuthOptions } from "next-auth";
+
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -7,7 +9,7 @@ import prisma from "@/lib/prisma";
 const useSecureCookies =
   process.env.NEXT_PUBLIC_NEXTAUTH_URL?.startsWith("https") ?? false;
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
@@ -54,6 +56,7 @@ const handler = NextAuth({
       },
     },
   },
-});
+};
 
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

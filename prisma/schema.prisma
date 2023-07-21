@@ -54,13 +54,13 @@ model VerificationToken {
 }
 
 model Memo {
-  id       Int      @id @default(autoincrement())
-  userId   String
-  title    String?  @db.Text
-  content  String?  @db.Text
-  color    String
-  checkBox Boolean  @default(false)
-  modified DateTime
+  id        Int      @id @default(autoincrement())
+  userId    String
+  title     String?  @db.Text
+  content   String?  @db.Text
+  color     String
+  checkBox  Boolean  @default(false)
+  updatedAt DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

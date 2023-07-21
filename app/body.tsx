@@ -203,30 +203,31 @@ export default function Body() {
                 bgColor={dark ? "whiteAlpha.100" : "blackAlpha.100"}
               >
                 <PopoverBody>
-                  {defaultMemos.map(({ color }) => (
-                    <Button
-                      key={color}
-                      minW={6}
-                      w={6}
-                      h={6}
-                      m={1}
-                      p={0}
-                      bgColor={getBgColor(color, dark)}
-                      border={(modalMemo?.color == color ? 2 : 1) + "px"}
-                      borderColor={
-                        modalMemo?.color == color
-                          ? dark
-                            ? "whiteAlpha.600"
-                            : "blackAlpha.600"
-                          : getBorderColor(color, dark)
-                      }
-                      _hover={{
-                        bgColor: getBgColor(color, dark),
-                      }}
-                      onClick={() =>
-                        setModalMemo({ ...(modalMemo ?? emptyMemo), color })
-                      }
-                    />
+                  {defaultMemos.map(({ color, title }) => (
+                    <Tooltip key={color} label={title} placement="top">
+                      <Button
+                        minW={6}
+                        w={6}
+                        h={6}
+                        m={1}
+                        p={0}
+                        bgColor={getBgColor(color, dark)}
+                        border={(modalMemo?.color == color ? 2 : 1) + "px"}
+                        borderColor={
+                          modalMemo?.color == color
+                            ? dark
+                              ? "whiteAlpha.600"
+                              : "blackAlpha.600"
+                            : getBorderColor(color, dark)
+                        }
+                        _hover={{
+                          bgColor: getBgColor(color, dark),
+                        }}
+                        onClick={() =>
+                          setModalMemo({ ...(modalMemo ?? emptyMemo), color })
+                        }
+                      />
+                    </Tooltip>
                   ))}
                 </PopoverBody>
               </PopoverContent>
