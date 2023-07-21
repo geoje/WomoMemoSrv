@@ -58,7 +58,7 @@ export default function Body() {
           {
             ...modalMemo,
             id: memos.reduce((acc, { id }) => Math.max(acc, id) + 1, -1),
-            modified: new Date(),
+            updatedAt: new Date(),
           },
           ...memos,
         ]);

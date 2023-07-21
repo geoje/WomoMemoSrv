@@ -1,10 +1,84 @@
-import prisma from "@/lib/prisma";
+import { emptyMemo } from "@/lib/memo";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: number } }
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
-  console.log(params.id);
-  const memo = prisma.memo.findFirst({ where: { id: params.id } });
-  return new Response(JSON.stringify(memo));
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  console.log(session);
+
+  if (isNaN(parseInt(params.id)))
+    return NextResponse.json({ error: "Unvalid id" }, { status: 400 });
+
+  const memo = await prisma?.memo.findFirst({
+    where: { id: parseInt(params.id), userId: session.user.id },
+  });
+  if (!memo || !Object.keys(memo))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  return NextResponse.json(memo);
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (isNaN(parseInt(params.id)))
+    return NextResponse.json({ error: "Unvalid id" }, { status: 400 });
+
+  const data = await request.json();
+  const dataKeys = Object.keys(data);
+  const noKeys = Object.keys(emptyMemo)
+    .filter((key) => !["userId", "updatedAt"].includes(key)) // No need to add a new memo to db
+    .filter((key) => !dataKeys.includes(key)); // Check if client give us all data
+  if (noKeys.length > 0)
+    return NextResponse.json(
+      { error: `Require fields [${noKeys.join()}]` },
+      { status: 400 }
+    );
+
+  if (isNaN(parseInt(params.id)))
+    return NextResponse.json({ error: "Unvalid id" }, { status: 400 });
+
+  const memo = await prisma?.memo.update({
+    where: { id: parseInt(params.id), userId: session.user.id },
+    data: {
+      title: data.title,
+      content: data.content,
+      color: data.color,
+      checkBox: typeof data.checkBox == "boolean" ? data.checkBox : false,
+      updatedAt: new Date(),
+    },
+  });
+  if (!memo || !Object.keys(memo))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  return NextResponse.json(memo);
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const memo = await prisma?.memo.delete({
+      where: { id: parseInt(params.id), userId: session.user.id },
+    });
+    return NextResponse.json(memo);
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 }

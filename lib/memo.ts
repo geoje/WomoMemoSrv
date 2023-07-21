@@ -5,7 +5,7 @@ export type Memo = {
   content: string;
   color: string;
   checkBox: boolean;
-  modified: Date;
+  updatedAt: Date;
 };
 
 export const defaultMemos: Memo[] = [
@@ -27,7 +27,7 @@ export const defaultMemos: Memo[] = [
   content: c,
   checkBox: false,
   color: c,
-  modified: new Date(),
+  updatedAt: new Date(),
 }));
 
 export const emptyMemo: Memo = {
@@ -37,7 +37,7 @@ export const emptyMemo: Memo = {
   content: "",
   color: "white",
   checkBox: false,
-  modified: new Date(),
+  updatedAt: new Date(),
 };
 
 export function getBgColor(color: string, dark: boolean) {
