@@ -50,20 +50,24 @@ export async function PUT(
   if (isNaN(parseInt(params.id)))
     return NextResponse.json({ error: "Unvalid id" }, { status: 400 });
 
-  const memo = await prisma.memo.update({
-    where: { id: parseInt(params.id), userId: session.user.id },
-    data: {
-      title: data.title,
-      content: data.content,
-      color: data.color,
-      checkBox: typeof data.checkBox == "boolean" ? data.checkBox : false,
-      updatedAt: new Date(),
-    },
-  });
-  if (!memo || !Object.keys(memo))
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  try {
+    const memo = await prisma.memo.update({
+      where: { id: parseInt(params.id), userId: session.user.id },
+      data: {
+        title: data.title,
+        content: data.content,
+        color: data.color,
+        checkBox: typeof data.checkBox == "boolean" ? data.checkBox : false,
+        updatedAt: new Date(),
+      },
+    });
+    if (!memo || !Object.keys(memo))
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  return NextResponse.json(memo);
+    return NextResponse.json(memo);
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 }
 
 export async function DELETE(
