@@ -39,7 +39,7 @@ export async function PUT(
   const data = await request.json();
   const dataKeys = Object.keys(data);
   const noKeys = Object.keys(emptyMemo)
-    .filter((key) => !["userId", "updatedAt"].includes(key)) // No need to add a new memo to db
+    .filter((key) => !["id", "userId", "updatedAt"].includes(key)) // No need to add a new memo to db
     .filter((key) => !dataKeys.includes(key)); // Check if client give us all data
   if (noKeys.length > 0)
     return NextResponse.json(
