@@ -1,3 +1,15 @@
+import { IconType } from "react-icons/lib";
+import { FaWindows, FaLinux, FaAndroid } from "react-icons/fa";
+import { MdLaptopMac, MdPhoneIphone } from "react-icons/md";
+
+export const downloadInfos: { icon: IconType; name: string; url: string }[] = [
+  { icon: FaWindows, name: "Windows", url: "/windows" },
+  { icon: MdLaptopMac, name: "macOS", url: "/macos" },
+  { icon: FaLinux, name: "Linux", url: "/linux" },
+  { icon: FaAndroid, name: "Android", url: "/android" },
+  { icon: MdPhoneIphone, name: "iOS", url: "/ios" },
+];
+
 export function compareObject(arg1: any, arg2: any): boolean {
   if (
     Object.prototype.toString.call(arg1) ===
