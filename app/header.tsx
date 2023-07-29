@@ -20,6 +20,8 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  SimpleGrid,
+  Stack,
   Text,
   useBreakpointValue,
   useColorMode,
@@ -33,6 +35,7 @@ import { HiSun, HiOutlineSearch } from "react-icons/hi";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import { RxExit } from "react-icons/rx";
 import { providers } from "@/lib/auth";
+import { downloadInfos } from "@/lib/tool";
 
 export default function Header() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -211,6 +214,30 @@ export default function Header() {
                 </Flex>
                 <Text mt={1}>{session.user.email}</Text>
               </Box>
+              <MenuDivider />
+              <SimpleGrid columns={3} px={2}>
+                {downloadInfos.map(({ icon, name, url }) => (
+                  <Link
+                    key={name}
+                    href={url}
+                    _hover={{ textDecoration: "none" }}
+                  >
+                    <Button
+                      variant="ghost"
+                      w="full"
+                      h="fit-content"
+                      px={1}
+                      py={2}
+                      color={dark ? "gray.300" : "gray.600"}
+                    >
+                      <Stack align="center">
+                        <Icon as={icon} />
+                        <Text fontSize="xs">{name}</Text>
+                      </Stack>
+                    </Button>
+                  </Link>
+                ))}
+              </SimpleGrid>
               <MenuDivider />
               <MenuItem icon={<Icon as={RxExit} />} onClick={() => signOut()}>
                 {"Logout"}
