@@ -4,10 +4,41 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+/**
+ * @swagger
+ * /api/memo/[id]:
+ *   get:
+ *     description: Get a memo
+ *     responses:
+ *       200:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 12
+ *                 userId:
+ *                   type: string
+ *                   example: "abcdefghijklmno1234567890"
+ *                 title:
+ *                   type: string
+ *                   example: "To Do List"
+ *                 content:
+ *                   type: string
+ *                   example: "Wash the dishes\nTake a shower"
+ *                 color:
+ *                   type: string
+ *                   example: "yellow"
+ *                 checkBox:
+ *                   type: boolean
+ *                   example: false
+ *                 updatedAt:
+ *                   type: date
+ *                   example: "2023-08-13T12:48:35.281Z"
+ */
+export async function GET({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -25,6 +56,64 @@ export async function GET(
   return NextResponse.json(memo);
 }
 
+/**
+ * @swagger
+ * /api/memo/[id]:
+ *   put:
+ *     description: Update a memo
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 example: "12"
+ *               title:
+ *                 type: string
+ *                 example: "To Do List"
+ *               content:
+ *                 type: string
+ *                 example: "Wash the dishes\nTake a shower"
+ *               color:
+ *                 type: string
+ *                 example: "yellow"
+ *               checkBox:
+ *                 type: string
+ *                 example: "false"
+ *               updatedAt:
+ *                 type: string
+ *                 example: "2023-08-13T12:48:35.281Z"
+ *     responses:
+ *       200:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 12
+ *                 userId:
+ *                   type: string
+ *                   example: "abcdefghijklmno1234567890"
+ *                 title:
+ *                   type: string
+ *                   example: "To Do List"
+ *                 content:
+ *                   type: string
+ *                   example: "Wash the dishes\nTake a shower"
+ *                 color:
+ *                   type: string
+ *                   example: "yellow"
+ *                 checkBox:
+ *                   type: boolean
+ *                   example: false
+ *                 updatedAt:
+ *                   type: date
+ *                   example: "2023-08-13T12:48:35.281Z"
+ */
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -70,10 +159,41 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+/**
+ * @swagger
+ * /api/memo/[id]:
+ *   delete:
+ *     description: Delete a memo
+ *     responses:
+ *       200:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 12
+ *                 userId:
+ *                   type: string
+ *                   example: "abcdefghijklmno1234567890"
+ *                 title:
+ *                   type: string
+ *                   example: "To Do List"
+ *                 content:
+ *                   type: string
+ *                   example: "Wash the dishes\nTake a shower"
+ *                 color:
+ *                   type: string
+ *                   example: "yellow"
+ *                 checkBox:
+ *                   type: boolean
+ *                   example: false
+ *                 updatedAt:
+ *                   type: date
+ *                   example: "2023-08-13T12:48:35.281Z"
+ */
+export async function DELETE({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
