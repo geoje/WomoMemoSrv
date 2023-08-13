@@ -4,6 +4,31 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+/**
+ * @swagger
+ * /api/memos:
+ *   get:
+ *     description: Returns all memos
+ *     responses:
+ *       200:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 12
+ *                 userId:
+ *                   type: string
+ *                   example: "abcdefghijklmno1234567890"
+ *                 title:
+ *                   type: string
+ *                   example: "To Do List"
+ *                 content:
+ *                   type: string
+ *                   example: "Wash the dishes\nTake a shower"
+ */
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session)
