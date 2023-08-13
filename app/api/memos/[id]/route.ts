@@ -38,7 +38,10 @@ import prisma from "@/lib/prisma";
  *                   type: date
  *                   example: "2023-08-13T12:48:35.281Z"
  */
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession(authOptions);
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -193,7 +196,10 @@ export async function PUT(
  *                   type: date
  *                   example: "2023-08-13T12:48:35.281Z"
  */
-export async function DELETE({ params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession(authOptions);
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
