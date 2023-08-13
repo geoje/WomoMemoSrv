@@ -139,20 +139,37 @@ export default function Header() {
           )}
         </InputGroup>
 
-        <IconButton
-          aria-label="mode"
-          variant="ghost"
-          display={["none", "block"]}
-          onClick={toggleColorMode}
-          colorScheme={dark ? "yellow" : "gray"}
-          icon={
-            dark ? (
-              <Icon as={HiSun} color="yellow.500" />
-            ) : (
-              <Icon as={RiMoonClearFill} color="gray.500" />
-            )
-          }
-        />
+        <Menu>
+          <MenuButton
+            as={Button}
+            display={["none", "block"]}
+            variant="ghost"
+            color="gray.500"
+          >
+            Download
+          </MenuButton>
+          <MenuList display={["none", "block"]}>
+            <SimpleGrid columns={3} px={2}>
+              {downloadInfos.map(({ icon, name, url }) => (
+                <Link key={name} href={url} _hover={{ textDecoration: "none" }}>
+                  <Button
+                    variant="ghost"
+                    w="full"
+                    h="fit-content"
+                    px={1}
+                    py={2}
+                    color={dark ? "gray.300" : "gray.600"}
+                  >
+                    <Stack align="center">
+                      <Icon as={icon} />
+                      <Text fontSize="xs">{name}</Text>
+                    </Stack>
+                  </Button>
+                </Link>
+              ))}
+            </SimpleGrid>
+          </MenuList>
+        </Menu>
         {session ? (
           <Menu>
             <MenuButton
@@ -215,29 +232,13 @@ export default function Header() {
                 <Text mt={1}>{session.user.email}</Text>
               </Box>
               <MenuDivider />
-              <SimpleGrid columns={3} px={2}>
-                {downloadInfos.map(({ icon, name, url }) => (
-                  <Link
-                    key={name}
-                    href={url}
-                    _hover={{ textDecoration: "none" }}
-                  >
-                    <Button
-                      variant="ghost"
-                      w="full"
-                      h="fit-content"
-                      px={1}
-                      py={2}
-                      color={dark ? "gray.300" : "gray.600"}
-                    >
-                      <Stack align="center">
-                        <Icon as={icon} />
-                        <Text fontSize="xs">{name}</Text>
-                      </Stack>
-                    </Button>
-                  </Link>
-                ))}
-              </SimpleGrid>
+              <MenuItem
+                icon={<Icon as={dark ? HiSun : RiMoonClearFill} />}
+                color={dark ? "yellow.500" : "blue.500"}
+                onClick={toggleColorMode}
+              >
+                {dark ? "Light Mode" : "Dark Mode"}
+              </MenuItem>
               <MenuDivider />
               <MenuItem icon={<Icon as={RxExit} />} onClick={() => signOut()}>
                 {"Logout"}
@@ -252,22 +253,19 @@ export default function Header() {
       </Flex>
       <Box display={["block", "none"]}>
         <Collapse in={isOpen}>
-          <Flex>
-            <Button
-              variant="ghost"
-              fontSize="sm"
-              colorScheme={dark ? "yellow" : "gray"}
-              onClick={toggleColorMode}
-              leftIcon={
-                dark ? (
-                  <Icon as={HiSun} color="yellow.500" />
-                ) : (
-                  <Icon as={RiMoonClearFill} color="gray.500" />
-                )
-              }
-            >
-              {dark ? "Light" : "Dark"} Mode
-            </Button>
+          <Flex wrap="wrap">
+            {downloadInfos.map(({ icon, name, url }) => (
+              <Link key={name} href={url} _hover={{ textDecoration: "none" }}>
+                <Button
+                  variant="ghost"
+                  fontSize="sm"
+                  color={dark ? "gray.300" : "gray.600"}
+                  leftIcon={<Icon as={icon} />}
+                >
+                  {name}
+                </Button>
+              </Link>
+            ))}
           </Flex>
           <Box p={2}>
             <InputGroup>
