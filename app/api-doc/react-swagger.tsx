@@ -11,7 +11,8 @@ function ReactSwagger({ spec }: Props) {
     <>
       <style>
         {`
-          button.try-out__btn {
+          button.try-out__btn,
+          .opblock-summary:hover .copy-to-clipboard {
             display: none;
           }
         `}
